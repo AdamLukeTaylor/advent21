@@ -1,21 +1,22 @@
 import scala.io.Source
 
-object Day2_part1 extends App {
+object Day2_part2 extends App {
   val example = "data/day2_1_example"
   val myData = "data/day2_1_data"
   val dataFile = myData
   val input = Source.fromFile(dataFile).getLines.toList.map(Instruction.fromString)
   println(s"${input}")
-  val start = Coord(0, 0)
+  val start = Coord(0, 0, 0)
   val end = input.foldLeft(start)(_.move(_))
   println(s"Finish at ${end}, answer = ${end.answer}")
 
-  case class Coord(position: Int, depth: Int) {
+
+  case class Coord(position: Int, depth: Int, aim: Int) {
     def move(instruction: Instruction): Coord = {
       instruction.direction match {
-        case "forward" => Coord(position, depth + instruction.distance)
-        case "down" => Coord(position + instruction.distance, depth)
-        case "up" => Coord(position - instruction.distance, depth)
+        case "forward" => Coord(position + instruction.distance, depth + instruction.distance * aim, aim)
+        case "down" => Coord(position, depth, aim + instruction.distance)
+        case "up" => Coord(position, depth, aim - instruction.distance)
       }
     }
 
