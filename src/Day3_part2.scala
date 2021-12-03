@@ -3,31 +3,57 @@ import scala.io.Source
 object Day3_part2 extends App {
   val example = "data/day3_1_example"
   val myData = "data/day3_1_data"
-  val dataFile = example
-  val input = Source.fromFile(dataFile).getLines.toList.map(Instruction.fromString)
-  println(s"${input}")
-  val start = Coord(0, 0)
-  val end = input.foldLeft(start)(_.move(_))
-  println(s"Finish at ${end}, answer = ${end.answer}")
+  val dataFile = myData
+  val input = Source.fromFile(dataFile).getLines.toList.map(_.toCharArray.toList)
 
-  case class Coord(position: Int, depth: Int) {
-    def move(instruction: Instruction): Coord = {
-      instruction.direction match {
-        case "forward" => Coord(position, depth + instruction.distance)
-        case "down" => Coord(position + instruction.distance, depth)
-        case "up" => Coord(position - instruction.distance, depth)
+  var oxygen = input
+  try {
+    for (a <- input.head.indices) {
+
+      var gammas = List.empty[Int]
+      for (a <- oxygen.head.indices) {
+        val row = oxygen.map(_ (a)).map(_.toInt - '0'.toInt)
+        val (ones, zeros) = row.partition(_ == 1)
+        println(ones.length + " " + zeros.length)
+        if (ones.length > zeros.length) gammas = gammas.appended(1) else if (ones.length == zeros.length) gammas = gammas.appended(1) else gammas = gammas.appended(0)
       }
-    }
+      val epsilons = gammas.map(num => if (num == 1) 0 else 1)
+      println(s"gamma ${gammas}, epeslon ${epsilons}")
 
-    def answer: Int = position * depth
-  }
 
-  case class Instruction(direction: String, distance: Int)
-
-  object Instruction {
-    def fromString(input: String) = {
-      val parts = input.split(" ")
-      new Instruction(parts(0), parts(1).toInt)
+      oxygen = oxygen.filter(row => row(a).toInt - '0'.toInt == gammas(a))
+      if (oxygen.length == 1) throw AllDone
     }
   }
+  catch {
+    case AllDone => println(s"Oxygen = ${oxygen} ${Integer.parseInt(oxygen.flatten.mkString(""), 2)}")
+  }
+  var co2 = input
+  try {
+    for (a <- input.head.indices) {
+      var gammas = List.empty[Int]
+      for (a <- co2.head.indices) {
+        val row = co2.map(_ (a)).map(_.toInt - '0'.toInt)
+        val (ones, zeros) = row.partition(_ == 1)
+        println(ones.length + " " + zeros.length)
+        if (ones.length > zeros.length) gammas = gammas.appended(1) else if (ones.length == zeros.length) gammas = gammas.appended(1) else gammas = gammas.appended(0)
+      }
+      val epsilons = gammas.map(num => if (num == 1) 0 else 1)
+      println(s"gamma ${gammas}, EPSILON ${epsilons}")
+
+
+      co2 = co2.filter(row => row(a).toInt - '0'.toInt == epsilons(a))
+      if (co2.length == 1) throw AllDone
+    }
+  }
+  catch {
+    case AllDone => {
+      println(s"co2 = ${co2} ${Integer.parseInt(co2.flatten.mkString(""), 2)}")
+    }
+  }
+
+
+  object AllDone extends Throwable
+
+  println(s"Answer = ${Integer.parseInt(co2.flatten.mkString(""), 2) * Integer.parseInt(oxygen.flatten.mkString(""), 2)}")
 }
