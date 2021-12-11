@@ -3,7 +3,7 @@ import scala.io.Source
 object Day9_part1 extends App {
   val example = "data/day9_1_example"
   val myData = "data/day9_1_data"
-  val dataFile = myData 
+  val dataFile = myData
   val input = Source.fromFile(dataFile).getLines.toSeq.map(Height.build)
   var heights = Array.fill[Height](input.length, input.head.length) {
     Height(-1, true)
